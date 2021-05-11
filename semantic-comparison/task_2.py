@@ -48,6 +48,7 @@ class Version:
         7. patch_subversion - нет
         """
 
+        self.version_str = version
         major, minor, patch = version.split(".", maxsplit=2)
         self.major = int(major)
         self.minor = int(minor)
@@ -81,20 +82,7 @@ class Version:
         return False
 
     def __gt__(self, other):
-        if self.major != other.major:
-            return self.major > other.major
-        if self.minor != other.minor:
-            return self.minor > other.minor
-        if self.patch_version != other.patch_version:
-            return self.patch_version > other.patch_version
-        if self.patch_symbol != other.patch_symbol:
-            return self.patch_symbol > other.patch_symbol
-        if self.PATCH_DETAILS.index(self.patch_detail) != self.PATCH_DETAILS.index(other.patch_detail):
-            return self.PATCH_DETAILS.index(self.patch_detail) > self.PATCH_DETAILS.index(other.patch_detail)
-        if self.patch_subversion != other.patch_subversion:
-            return self.patch_subversion > other.patch_subversion
-
-        return False
+        return not self.__lt__(other) and not self.__eq__(other)
 
     def __eq__(self, other):
         if self.major != other.major:
@@ -116,11 +104,8 @@ class Version:
         return not self.__eq__(other)
 
     def __str__(self):
-        return ".".join([str(self.major), str(self.minor), str(self.patch_version)]) + "-".join(
-            [self.patch_symbol, self.patch_detail]) + "." + self.patch_subversion
+        return self.version_str
 
-v1 = Version("1.0.10-alpha.beta")
-v2 = Version("1.0.1b")
 
 def main():
     # 0-alpha < 0-alpha.1 < 0-alpha.beta < 0-beta < 0-beta.2 < 0-beta.11 < 0-rc.1 < 0 < 0b < 0c < 1
