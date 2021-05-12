@@ -31,12 +31,13 @@ class RoomsJsonFileRepository(RoomsFileRepositoryInterface):
         print('RoomsJsonFileRepository.listRooms is called')
 
         with open(self.dir + '/' + self.filename, mode='r') as file:
-            rooms = list(json.load(file))
-            return list(map(lambda room: {"id": room['id'], "name": room['name']}, rooms))
+            file_data = json.load(file)
+            rooms = {room['id']: room for room in file_data}
+            return rooms
 
     def saveRooms(self, new_filename, rooms):
         with open(self.dir + '/' + new_filename, 'w') as new_json_file:
-            json.dump(rooms, new_json_file)
+            json.dump(list(rooms.values()), new_json_file)
 
 
 class RoomsXmlFileRepository(RoomsFileRepositoryInterface):
@@ -46,5 +47,5 @@ class RoomsXmlFileRepository(RoomsFileRepositoryInterface):
 
     def saveRooms(self, new_filename, rooms):
         with open(self.dir + '/' + new_filename, "w") as new_xml_file:
-            xml = dicttoxml(rooms, item_func=lambda item: 'student').decode()
+            xml = dicttoxml(list(rooms.values()), item_func=lambda item: 'student').decode()
             new_xml_file.write(xml)
