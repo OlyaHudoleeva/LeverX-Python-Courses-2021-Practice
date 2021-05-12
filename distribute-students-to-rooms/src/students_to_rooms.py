@@ -8,8 +8,7 @@ def __add_student_to_room(room, student):
 
 def destribute(rooms, students):
     for student in students:
-        for room in rooms:
-            if student["room"] == room["id"]:
-                __add_student_to_room(room, student)
-                break
+        student_room = rooms[student["room"]]
+        if student_room:
+            __add_student_to_room(student_room, student)
     return rooms
