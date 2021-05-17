@@ -1,10 +1,12 @@
 import json
+from abc import ABC, abstractmethod
 
 
-class StudentsRepositoryInterface:
+class StudentsRepositoryInterface(ABC):
 
-    def listStudents(self):
-        print('StudentsRepositoryInterface.listStudents is called')
+    @abstractmethod
+    def list_students(self):
+        print('StudentsRepositoryInterface.list_students is called')
 
 
 class StudentsFileRepositoryInterface(StudentsRepositoryInterface):
@@ -13,16 +15,15 @@ class StudentsFileRepositoryInterface(StudentsRepositoryInterface):
         self.dir = dir
         self.filename = filename
 
-    def listStudents(self):
-        print('StudentsFileRepositoryInterface.listStudents is called')
+    def list_students(self):
+        print('StudentsFileRepositoryInterface.list_students is called')
 
 
 class StudentsJsonFileRepository(StudentsFileRepositoryInterface):
 
-    def listStudents(self):
-        print('StudentsJsonFileRepository.listStudents is called')
+    def list_students(self):
+        print('StudentsJsonFileRepository.list_students is called')
 
         with open(self.dir + '/' + self.filename, mode='r') as file:
             students = list(json.load(file))
-            return list(
-                map(lambda student: {"id": student['id'], "name": student['name'], "room": student['room']}, students))
+            return [{"id": student['id'], "name": student['name'], "room": student['room']} for student in students]
