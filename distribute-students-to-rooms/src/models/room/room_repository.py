@@ -15,6 +15,26 @@ class RoomsRepositoryInterface(ABC):
         print('RoomsRepositoryInterface.save_rooms is called')
 
 
+class RoomsDbRepository(RoomsRepositoryInterface):
+
+    def __init__(self, connection, table_name):
+        self.connection = connection
+        self.table_name = table_name
+
+    def list_rooms(self):
+        pass
+
+    def clear_table(self):
+        self.connection.cursor.execute('DELETE FROM {}'.format(self.table_name))
+
+    def save_rooms(self, rooms):
+        for room in rooms:
+            self.connection.cursor.execute('INSERT INTO {} (id, name) VALUES (%s, %s)'.format(self.table_name),
+                                           (room['id'], room['name']))
+
+        self.connection.cnx.commit()
+
+
 class RoomsFileRepositoryInterface(RoomsRepositoryInterface):
 
     def __init__(self, dir, filename):
@@ -35,8 +55,7 @@ class RoomsJsonFileRepository(RoomsFileRepositoryInterface):
 
         with open(self.dir + '/' + self.filename, mode='r') as file:
             file_data = json.load(file)
-            rooms = {room['id']: room for room in file_data}
-            return rooms
+            return file_data
 
     def save_rooms(self, new_filename, rooms):
         with open(self.dir + '/' + new_filename, 'w') as new_json_file:
